@@ -4,6 +4,7 @@ using FamilyBudget;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyBudget.Migrations
 {
     [DbContext(typeof(FamilyBudgetDbContext))]
-    partial class FamilyBudgetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231105190647_SwitchUserToInheritIdentityUser")]
+    partial class SwitchUserToInheritIdentityUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,38 +38,6 @@ namespace FamilyBudget.Migrations
                     b.HasIndex("MembersId");
 
                     b.ToTable("BudgetUser");
-                });
-
-            modelBuilder.Entity("FamilyBudget.Models.BalanceChange", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
-
-                    b.Property<int>("BudgetId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BudgetId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("BudgetChanges");
                 });
 
             modelBuilder.Entity("FamilyBudget.Models.Budget", b =>
@@ -105,6 +76,58 @@ namespace FamilyBudget.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("FamilyBudget.Models.Expense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("real");
+
+                    b.Property<int>("BudgetId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BudgetId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Expenses");
+                });
+
+            modelBuilder.Entity("FamilyBudget.Models.Income", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("real");
+
+                    b.Property<int>("BudgetId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BudgetId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Incomes");
                 });
 
             modelBuilder.Entity("FamilyBudget.Models.User", b =>
@@ -323,10 +346,21 @@ namespace FamilyBudget.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("FamilyBudget.Models.BalanceChange", b =>
+            modelBuilder.Entity("FamilyBudget.Models.Budget", b =>
+                {
+                    b.HasOne("FamilyBudget.Models.User", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Admin");
+                });
+
+            modelBuilder.Entity("FamilyBudget.Models.Expense", b =>
                 {
                     b.HasOne("FamilyBudget.Models.Budget", "Budget")
-                        .WithMany("BalanceChanges")
+                        .WithMany("Expenses")
                         .HasForeignKey("BudgetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -340,15 +374,21 @@ namespace FamilyBudget.Migrations
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("FamilyBudget.Models.Budget", b =>
+            modelBuilder.Entity("FamilyBudget.Models.Income", b =>
                 {
-                    b.HasOne("FamilyBudget.Models.User", "Admin")
-                        .WithMany()
-                        .HasForeignKey("AdminId")
+                    b.HasOne("FamilyBudget.Models.Budget", "Budget")
+                        .WithMany("Incomes")
+                        .HasForeignKey("BudgetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Admin");
+                    b.HasOne("FamilyBudget.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Budget");
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -404,7 +444,9 @@ namespace FamilyBudget.Migrations
 
             modelBuilder.Entity("FamilyBudget.Models.Budget", b =>
                 {
-                    b.Navigation("BalanceChanges");
+                    b.Navigation("Expenses");
+
+                    b.Navigation("Incomes");
                 });
 #pragma warning restore 612, 618
         }

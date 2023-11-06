@@ -4,6 +4,7 @@ using FamilyBudget;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FamilyBudget.Migrations
 {
     [DbContext(typeof(FamilyBudgetDbContext))]
-    partial class FamilyBudgetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231106170540_Not requiring category")]
+    partial class Notrequiringcategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,7 +67,9 @@ namespace FamilyBudget.Migrations
 
                     b.HasIndex("BudgetId");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("CategoryId")
+                        .IsUnique()
+                        .HasFilter("[CategoryId] IS NOT NULL");
 
                     b.ToTable("BudgetChanges");
                 });
@@ -332,8 +337,8 @@ namespace FamilyBudget.Migrations
                         .IsRequired();
 
                     b.HasOne("FamilyBudget.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId");
+                        .WithOne()
+                        .HasForeignKey("FamilyBudget.Models.BalanceChange", "CategoryId");
 
                     b.Navigation("Budget");
 
