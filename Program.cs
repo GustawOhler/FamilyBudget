@@ -6,8 +6,22 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
+const string MY_CORS_POLICY = "_MyCorsPolicy";
+
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MY_CORS_POLICY,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:3000",
+                                             "https://localhost:3000",
+                                             "http://127.0.0.1:3000",
+                                             "https://127.0.0.1:3000").AllowAnyMethod().AllowAnyHeader();
+                      });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(Program));
@@ -49,6 +63,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors(MY_CORS_POLICY);
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

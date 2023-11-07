@@ -6,6 +6,7 @@ namespace FamilyBudget.Models
     {
         [Key]
         public int Id { get; set; }
+        public string Name { get; set; }
         public float Balance { get; set; }
         public int AdminId { get; set; }
         public User Admin { get; set; }

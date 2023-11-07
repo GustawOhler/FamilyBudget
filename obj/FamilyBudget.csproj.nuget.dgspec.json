@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj": {}
+    "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj": {}
   },
   "projects": {
-    "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj": {
+    "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
+        "projectUniqueName": "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
         "projectName": "FamilyBudget",
-        "projectPath": "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
+        "projectPath": "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
         "packagesPath": "C:\\Users\\gusta\\.nuget\\packages\\",
-        "outputPath": "C:\\Pliki\\code\\FamilyBudget\\obj\\",
+        "outputPath": "c:\\Pliki\\code\\FamilyBudget\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\gusta\\AppData\\Roaming\\NuGet\\NuGet.Config"

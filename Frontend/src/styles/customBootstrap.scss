@@ -1,0 +1,78 @@
+// 1. Include functions first (so you can manipulate colors, SVGs, calc, etc)
+@import "functions";
+
+// 2. Include any default variable overrides here
+$body-color: #fff;
+$body-bg: #b5e9e9;
+$primary: #fef6dd;
+$secondary: #fff1b5;
+$third: #dcf3d0;
+$font-family-base: "Roboto", sans-serif;
+
+// @import '../../node_modules/bootstrap/scss/bootstrap';
+@import "variables";
+
+$custom-colors: (
+  "third": $third,
+  "transparent": transparent,
+);
+$theme-colors: map-merge($theme-colors, $custom-colors);
+
+@import "variables-dark";
+@import "maps";
+@import "mixins";
+@import "utilities";
+
+// Layout & components
+@import "root";
+@import "reboot";
+@import "type";
+@import "images";
+@import "containers";
+@import "grid";
+@import "tables";
+@import "forms";
+@import "buttons";
+@import "transitions";
+@import "dropdown";
+@import "button-group";
+@import "nav";
+@import "navbar";
+@import "card";
+@import "accordion";
+@import "breadcrumb";
+@import "pagination";
+@import "badge";
+@import "alert";
+@import "progress";
+@import "list-group";
+@import "close";
+@import "toasts";
+@import "modal";
+@import "tooltip";
+@import "popover";
+@import "carousel";
+@import "spinners";
+@import "offcanvas";
+@import "placeholders";
+
+@import "helpers";
+@import "utilities/api";
+
+$sizes: (
+  25: 25%,
+  50: 50%,
+  75: 75%,
+  100: 100%,
+  auto: auto,
+);
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @each $size, $length in $sizes {
+    @include media-breakpoint-up($breakpoint) {
+      .w-#{$breakpoint}-#{$size} {
+        width: $length !important;
+      }
+    }
+  }
+}

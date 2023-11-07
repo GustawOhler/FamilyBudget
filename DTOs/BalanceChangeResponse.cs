@@ -8,8 +8,10 @@ namespace FamilyBudget.DTOs
     {
         public int Id { get; set; }
         public float Amount { get; set; }
-        public required BudgetResponse Budget { get; set; }
+        public string Name { get; set; }
+        public required int BudgetId { get; set; }
         public Category? Category { get; set; }
         public BalanceChangeType Type { get; set; }
+        public DateTime DateOfChange { get; set; }
     }
 }

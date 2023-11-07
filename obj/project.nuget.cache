@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xS4KC7BpONr9lAiT+yjhDiDkzyIjjvzXAeIClRBNSV6NKgpNv7D+keQmHjtmQIGtkm3YJ9DLbsgNmt7NvoP79g==",
+  "dgSpecHash": "lCI6SRLvJui9pKnR5MC6ub23NZsxw+9USsoa1s/y7H4192H7lhJiCl3WRhviUndWYQy4czi2XZNWvQTzz9KZbQ==",
   "success": true,
-  "projectFilePath": "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
+  "projectFilePath": "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\gusta\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\gusta\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

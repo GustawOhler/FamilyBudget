@@ -54,7 +54,10 @@ namespace FamilyBudget.Migrations
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Title")
+                    b.Property<DateTime>("DateOfChange")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Type")
@@ -66,7 +69,7 @@ namespace FamilyBudget.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("BudgetChanges");
+                    b.ToTable("BalanceChanges");
                 });
 
             modelBuilder.Entity("FamilyBudget.Models.Budget", b =>
@@ -82,6 +85,10 @@ namespace FamilyBudget.Migrations
 
                     b.Property<float>("Balance")
                         .HasColumnType("real");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -105,6 +112,48 @@ namespace FamilyBudget.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Wypłata"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Zarobek z inwestycji"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Cashback"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Rachunki"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Podatki"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Zakupy spożywcze"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Płatności w lokalach"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Inne"
+                        });
                 });
 
             modelBuilder.Entity("FamilyBudget.Models.User", b =>
