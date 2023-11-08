@@ -1,0 +1,31 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: "3.4"
+
+services:
+  sqldata:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD="testing)_password1("
+      - ACCEPT_EULA=Y
+    ports:
+      - "5434:1433"
+  migrations:
+    image: familybudget
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: dotnet FamilyBudget.dll ef database update
+  familybudget:
+    image: familybudget
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_HTTP_PORT=http://+:5001
+      - ASPNETCORE_URLS=http://+:5001
+    ports:
+      - 5001:5001
+    depends_on:
+      - sqldata
+    command: dotnet FamilyBudget.dll
