@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AutoMapper;
+using FamilyBudget.Common;
 using FamilyBudget.DTOs;
 using FamilyBudget.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -35,12 +36,12 @@ namespace FamilyBudget.Controllers
         public async Task<IActionResult> GetBudgetsForUser([FromRoute] int userId, [FromBody] BudgetSearchRequest budgetSearchRequest)
         {
             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-            if (authUser == null || authUser.Id != userId)
+            if (!AuthorizationChecker.CheckAuthorizationForUser(authUser, userId))
             {
                 return Unauthorized("Authorized user is not identical to one who's resources are requested.");
             }
 
-            var requestedUser = dbContext.Users.Where(u => u.Id == userId).SingleOrDefault();
+            var requestedUser = await dbContext.Users.Where(u => u.Id == userId).SingleOrDefaultAsync();
 
             if (requestedUser == null)
             {
@@ -63,14 +64,9 @@ namespace FamilyBudget.Controllers
                 budgetsQuery = budgetsQuery.Where(b => b.Name.Contains(budgetSearchRequest.Name));
             }
 
-            var budgets = budgetsQuery.ToList();
+            var budgets = await budgetsQuery.ToListAsync();
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                WriteIndented = true
-            };
-            return Content(JsonSerializer.Serialize(new { budgets = mapper.Map<List<BudgetResponse>>(budgets) }, options), "application/json");
+            return Content(CustomJsonSerializer.SerializeIgnoreCycles(new { budgets = mapper.Map<List<BudgetResponse>>(budgets) }), "application/json");
         }
 
         [HttpGet]
@@ -78,19 +74,14 @@ namespace FamilyBudget.Controllers
         public async Task<IActionResult> GetBudgetDetails([FromRoute] int budgetId)
         {
             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-            var requestedBudget = dbContext.Budgets.Include(b => b.BalanceChanges).Include(b => b.Members).Include(b => b.Admin).Where(b => b.Id == budgetId).Single();
+            var requestedBudget = await dbContext.Budgets.Include(b => b.BalanceChanges).Include(b => b.Members).Include(b => b.Admin).Where(b => b.Id == budgetId).SingleAsync();
 
-            if (authUser == null || !requestedBudget.Members.Any(u => u.Id == authUser.Id))
+            if (!AuthorizationChecker.CheckAuthorizationForBudget(authUser, requestedBudget))
             {
                 return Unauthorized("User is not one of budget members.");
             }
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                WriteIndented = true
-            };
-            return Content(JsonSerializer.Serialize(mapper.Map<BudgetResponse>(requestedBudget), options), "application/json");
+            return Content(CustomJsonSerializer.SerializeIgnoreCycles(mapper.Map<BudgetResponse>(requestedBudget)), "application/json");
         }
 
         [HttpPost]
@@ -103,14 +94,9 @@ namespace FamilyBudget.Controllers
             budget.Members.Add(authUser);
 
             dbContext.Budgets.Add(budget);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                WriteIndented = true
-            };
-            return Content(JsonSerializer.Serialize(mapper.Map<BudgetResponse>(budget), options), "application/json");
+            return Content(CustomJsonSerializer.SerializeIgnoreCycles(mapper.Map<BudgetResponse>(budget)), "application/json");
         }
 
         [HttpPost]
@@ -118,9 +104,9 @@ namespace FamilyBudget.Controllers
         public async Task<IActionResult> SearchBalanceChanges([FromRoute] int budgetId, [FromBody] BalanceChangeSearchRequest searchRequest)
         {
             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-            var requestedBudget = dbContext.Budgets.Include(b => b.BalanceChanges).Include(b => b.Members).Include(b => b.Admin).Where(b => b.Id == budgetId).Single();
+            var requestedBudget = await dbContext.Budgets.Include(b => b.BalanceChanges).Include(b => b.Members).Include(b => b.Admin).Where(b => b.Id == budgetId).SingleAsync();
 
-            if (authUser == null || !requestedBudget.Members.Any(u => u.Id == authUser.Id))
+            if (!AuthorizationChecker.CheckAuthorizationForBudget(authUser, requestedBudget))
             {
                 return Unauthorized("User is not one of budget members.");
             }
@@ -137,7 +123,7 @@ namespace FamilyBudget.Controllers
                 query = query.Where(bc => bc.Name.Contains(searchRequest.Name));
             }
 
-            var balanceChanges = query.ToList();
+            var balanceChanges = await query.ToListAsync();
 
             return Content(JsonSerializer.Serialize(new { budgets = mapper.Map<List<BalanceChangeResponse>>(balanceChanges) }), "application/json");
         }
@@ -147,28 +133,30 @@ namespace FamilyBudget.Controllers
         public async Task<IActionResult> AddBalanceChange([FromRoute] int budgetId, [FromBody] BalanceChangeRequest balanceChangeRequest)
         {
             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-            var budget = dbContext.Budgets.Include(b => b.Members).Where(b => b.Id == budgetId).Single();
+            var budget = await dbContext.Budgets.Include(b => b.Members).Where(b => b.Id == budgetId).SingleAsync();
 
-            if (authUser == null || !budget.Members.Any(u => u.Id == authUser.Id))
+            if (!AuthorizationChecker.CheckAuthorizationForBudget(authUser, budget))
             {
                 return Unauthorized("User is not one of budget members.");
             }
 
             var balanceChangeDb = mapper.Map<BalanceChange>(balanceChangeRequest);
             balanceChangeDb.Budget = budget;
-            balanceChangeDb.Category = dbContext.Categories.Where(c => c.Id == balanceChangeRequest.CategoryId).SingleOrDefault();
+            balanceChangeDb.Category = await dbContext.Categories.Where(c => c.Id == balanceChangeRequest.CategoryId).SingleOrDefaultAsync();
 
-            budget.Balance += balanceChangeDb.Type == Common.BalanceChangeType.Income ? balanceChangeDb.Amount : -balanceChangeDb.Amount;
+            if (balanceChangeDb.Type == Common.BalanceChangeType.Income)
+            {
+                budget.Balance += balanceChangeDb.Amount;
+            }
+            else
+            {
+                budget.Balance -= balanceChangeDb.Amount;
+            }
 
             dbContext.BalanceChanges.Add(balanceChangeDb);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                WriteIndented = true
-            };
-            return Content(JsonSerializer.Serialize(mapper.Map<BalanceChangeResponse>(balanceChangeDb), options), "application/json");
+            return Content(CustomJsonSerializer.SerializeIgnoreCycles(mapper.Map<BalanceChangeResponse>(balanceChangeDb)), "application/json");
         }
 
         [HttpPatch]
@@ -176,14 +164,19 @@ namespace FamilyBudget.Controllers
         public async Task<IActionResult> AddUsersToBudget([FromRoute] int budgetId, [FromBody] UserListRequest newMembers)
         {
             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-            var budget = dbContext.Budgets.Include(b => b.Members).Where(b => b.Id == budgetId).Single();
+            var budget = await dbContext.Budgets.Include(b => b.Members).Where(b => b.Id == budgetId).SingleAsync();
 
-            if (!budget.Members.Contains(authUser!))
+            if (!AuthorizationChecker.CheckAuthorizationForBudget(authUser, budget))
             {
-                return Unauthorized("User is not a member of this budget.");
+                return Unauthorized("User is not one of budget members.");
             }
 
-            var newMembersDb = dbContext.Users.Where(u => newMembers.UserIds.Contains(u.Id)).ToList();
+            if (budget.AdminId != authUser.Id)
+            {
+                return Unauthorized("User does not have rights to perform this operation");
+            }
+
+            var newMembersDb = await dbContext.Users.Where(u => newMembers.UserIds.Contains(u.Id)).ToListAsync();
 
             var currentMembers = budget.Members.ToList();
 
@@ -192,12 +185,7 @@ namespace FamilyBudget.Controllers
             budget.Members = concatMembers.Distinct().ToList();
             dbContext.SaveChanges();
 
-            var options = new JsonSerializerOptions
-            {
-                ReferenceHandler = ReferenceHandler.IgnoreCycles,
-                WriteIndented = true
-            };
-            return Content(JsonSerializer.Serialize(mapper.Map<BudgetResponse>(budget), options), "application/json");
+            return Content(CustomJsonSerializer.SerializeIgnoreCycles(mapper.Map<BudgetResponse>(budget)), "application/json");
         }
     }
 }

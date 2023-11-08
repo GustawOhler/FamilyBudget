@@ -1,17 +1,18 @@
-using System;
+using System.ComponentModel.DataAnnotations;
 using FamilyBudget.Common;
-using FamilyBudget.Models;
 
-namespace FamilyBudget.DTOs
+namespace FamilyBudget.Models
 {
-    public class BalanceChangeResponse
+    public class BalanceChange
     {
+        [Key]
         public int Id { get; set; }
+        public string? Name { get; set; }
         public float Amount { get; set; }
-        public string Name { get; set; }
         public required int BudgetId { get; set; }
+        public Budget? Budget { get; set; }
+        public DateTime DateOfChange { get; set; }
         public Category? Category { get; set; }
         public BalanceChangeType Type { get; set; }
-        public DateTime DateOfChange { get; set; }
     }
 }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj": {}
+    "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj": {}
   },
   "projects": {
-    "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj": {
+    "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
+        "projectUniqueName": "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
         "projectName": "FamilyBudget",
-        "projectPath": "c:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
+        "projectPath": "C:\\Pliki\\code\\FamilyBudget\\FamilyBudget.csproj",
         "packagesPath": "C:\\Users\\gusta\\.nuget\\packages\\",
-        "outputPath": "c:\\Pliki\\code\\FamilyBudget\\obj\\",
+        "outputPath": "C:\\Pliki\\code\\FamilyBudget\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\gusta\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -68,9 +68,17 @@
               "target": "Package",
               "version": "[7.0.13, )"
             },
+            "Moq": {
+              "target": "Package",
+              "version": "[4.20.69, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.5.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.6.1, )"
             }
           },
           "imports": [
