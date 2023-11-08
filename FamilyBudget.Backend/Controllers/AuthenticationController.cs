@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FamilyBudget.Backend.DTOs;
 using FamilyBudget.DTOs;
 using FamilyBudget.Models;
 using Microsoft.AspNetCore.Identity;
@@ -47,11 +48,11 @@ namespace FamilyBudget.Controllers
                     claims: claims
                     );
 
-            return Ok(new
+            return Ok(new AuthorizationResponse
             {
-                token = new JwtSecurityTokenHandler().WriteToken(token),
-                expiration = token.ValidTo,
-                id = user.Id
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = token.ValidTo,
+                Id = user.Id
             });
         }
 
@@ -61,7 +62,7 @@ namespace FamilyBudget.Controllers
         {
             var userExists = await userManager.FindByNameAsync(userModel.UserName);
             if (userExists != null)
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Status = "Error", Message = "User already exists!" });
+                return BadRequest(new { Status = "Error", Message = "User already exists!" });
 
             var user = new User()
             {
