@@ -1,4 +1,4 @@
-namespace FamilyBudget.Common
+namespace FamilyBudgetDomain.Enums
 {
     public enum BalanceChangeType
     {

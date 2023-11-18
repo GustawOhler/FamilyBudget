@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using FamilyBudget.Common;
+using FamilyBudgetDomain.Enums;
 
-namespace FamilyBudget.Models
+namespace FamilyBudgetDomain.Models
 {
     public class BalanceChange
     {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FamilyBudget.Models
+namespace FamilyBudgetDomain.Models
 {
     public class Budget
     {

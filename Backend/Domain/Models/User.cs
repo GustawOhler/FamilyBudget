@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-namespace FamilyBudget.Models
+namespace FamilyBudgetDomain.Models
 {
     public class User : IdentityUser<int>
     {

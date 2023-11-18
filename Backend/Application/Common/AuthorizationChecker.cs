@@ -1,4 +1,4 @@
-using FamilyBudget.Models;
+using FamilyBudgetDomain.Models;
 
 public static class AuthorizationChecker
 {
