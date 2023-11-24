@@ -1,6 +1,6 @@
 using AutoMapper;
 using FamilyBudget.DTOs;
-using FamilyBudget.Models;
+using FamilyBudgetDomain.Models;
 
 namespace FamilyBudget
 {

@@ -3,10 +3,10 @@ using FamilyBudgetDomain.Enums;
 
 namespace FamilyBudgetDomain.Models
 {
-    public class BalanceChange
+    public class BalanceChange: IEntityBase
     {
         [Key]
-        public int Id { get; set; }
+        public int Id { get; init; }
         public string? Name { get; set; }
         public float Amount { get; set; }
         public required int BudgetId { get; set; }

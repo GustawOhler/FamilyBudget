@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FamilyBudgetDomain.Models
 {
-    public class Budget
+    public class Budget: IEntityBase
     {
         [Key]
-        public int Id { get; set; }
+        public int Id { get; init; }
         public required string Name { get; set; }
         public float Balance { get; set; }
         public int AdminId { get; set; }

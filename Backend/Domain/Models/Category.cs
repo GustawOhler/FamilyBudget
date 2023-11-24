@@ -2,10 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FamilyBudgetDomain.Models
 {
-    public class Category
+    public class Category: IEntityBase
     {
         [Key]
-        public int Id { get; set; }
+        public int Id { get; init; }
         public required string Name { get; set; }
     }
 }

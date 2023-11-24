@@ -1,8 +1,12 @@
 using System.Text;
+using Application.Auth;
 using FamilyBudget;
-using FamilyBudget.Models;
+using FamilyBudgetApplication.Auth;
+using FamilyBudgetDomain.Interfaces;
+using FamilyBudgetDomain.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -28,7 +32,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddDbContext<FamilyBudgetDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("FamilyBudgetDatabase")));
 
-builder.Services.AddIdentity<User, IdentityRole<int>>()
+builder.Services.AddIdentityCore<User>()
         .AddEntityFrameworkStores<FamilyBudgetDbContext>()
         .AddDefaultTokenProviders();
 
@@ -54,6 +58,10 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddTransient<ITokenGenerator, JwtTokenGenerator>();
+builder.Services.AddTransient<IAuthenticator, SimpleAuthenticator>();
+builder.Services.AddTransient<IUserRegistrant, UserRegistrant>();
 
 var app = builder.Build();
 

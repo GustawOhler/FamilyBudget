@@ -1,4 +1,4 @@
-using FamilyBudget.Models;
+using FamilyBudgetDomain.Models;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Microsoft.Extensions.Configuration;

@@ -1,6 +1,6 @@
 using System;
-using FamilyBudget.Common;
-using FamilyBudget.Models;
+using FamilyBudgetDomain.Enums;
+using FamilyBudgetDomain.Models;
 
 namespace FamilyBudget.DTOs
 {

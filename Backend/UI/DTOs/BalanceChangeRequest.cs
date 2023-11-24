@@ -1,4 +1,4 @@
-using FamilyBudget.Common;
+using FamilyBudgetDomain.Enums;
 
 namespace FamilyBudget.DTOs
 {

@@ -1,9 +1,12 @@
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using FamilyBudget.Backend.DTOs;
 using FamilyBudget.DTOs;
-using FamilyBudget.Models;
+using FamilyBudgetApplication.Auth;
+using FamilyBudgetDomain.Exceptions;
+using FamilyBudgetDomain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -14,65 +17,58 @@ namespace FamilyBudget.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        private readonly UserManager<User> userManager;
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration _configuration;
+        private readonly IAuthenticator _authenticator;
+        private readonly ITokenGenerator _tokenGenerator;
+        private readonly IUserRegistrant _userRegistrator;
 
-        public AuthenticationController(UserManager<User> userManager, IConfiguration configuration)
+
+        public AuthenticationController(IAuthenticator authenticator, IConfiguration configuration, ITokenGenerator tokenGenerator, IUserRegistrant userRegistrant)
         {
-            this.userManager = userManager;
-            this.configuration = configuration;
+            _authenticator = authenticator;
+            _configuration = configuration;
+            _tokenGenerator = tokenGenerator;
+            _userRegistrator = userRegistrant;
         }
 
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] AuthorizationRequest userModel)
         {
-            var user = await userManager.FindByNameAsync(userModel.UserName);
-
-            if (user == null)
-                return BadRequest("There's no user with given username");
-
-            if (!await userManager.CheckPasswordAsync(user, userModel.Password))
-                return BadRequest("Wrong password");
-
-            var claims = new List<Claim>{
-                    new Claim(ClaimTypes.Name, user.UserName!)
-                };
-
-            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]!));
-            var token = new JwtSecurityToken(
-                    issuer: configuration["JWT:ValidIssuer"],
-                    audience: configuration["JWT:ValidAudience"],
-                    expires: DateTime.Now.AddDays(1),
-                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256),
-                    claims: claims
-                    );
-
-            return Ok(new AuthorizationResponse
+            try
             {
-                Token = new JwtSecurityTokenHandler().WriteToken(token),
-                Expiration = token.ValidTo,
-                Id = user.Id
-            });
+                var user = await _authenticator.AuthenticateUser(userModel.UserName, userModel.Password);
+                var token = _tokenGenerator.GenerateToken(userModel.UserName);
+                return Ok(new AuthorizationResponse
+                {
+                    Token = _tokenGenerator.TokenToString(token),
+                    Expiration = token.ValidTo,
+                    Id = user.Id
+                });
+            }
+            catch (AuthenticationException e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] AuthorizationRequest userModel)
         {
-            var userExists = await userManager.FindByNameAsync(userModel.UserName);
-            if (userExists != null)
-                return BadRequest(new { Status = "Error", Message = "User already exists!" });
-
-            var user = new User()
+            try
             {
-                UserName = userModel.UserName
-            };
-            var result = await userManager.CreateAsync(user, userModel.Password);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
-            return Ok(new { Status = "Success", Message = "User created successfully!" });
+                await _userRegistrator.RegisterUser(userModel.UserName, userModel.Password);
+                return Ok(new { Status = "Success", Message = "User created successfully!" });
+            }
+            catch (RegistrationException regExc)
+            {
+                return BadRequest(regExc.Message);
+            }
+            catch (InnerQuietException innerEx)
+            {
+                return StatusCode(500, innerEx.Message);
+            }
         }
     }
 }
