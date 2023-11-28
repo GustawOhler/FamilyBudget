@@ -1,6 +1,6 @@
 using FamilyBudgetDomain.Models;
 
-namespace FamilyBudgetDomain.Interfaces
+namespace FamilyBudgetApplication.Interfaces
 {
     public interface IAuthenticator
     {

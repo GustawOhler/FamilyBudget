@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Domain\FamilyBudgetDomain.csproj" />
+    <ProjectReference Include="..\Infrastructure\FamilyBudgetInfrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

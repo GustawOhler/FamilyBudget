@@ -1,15 +1,15 @@
 using System.Linq.Expressions;
 using FamilyBudgetDomain.Models;
+using FamilyBudgetInfrastructure.Database.Specifications;
 
 namespace Infrastructure.Database.Repositories
 {
     public interface IRepository<T> where T : IEntityBase
     {
-        T? GetById(int id);
-        IEnumerable<T> List();
-        IEnumerable<T> List(Expression<Func<T, bool>> predicate);
-        void Add(T entity);
-        void Delete(T entity);
-        void Edit(T entity);
+        Task<T?> GetSingleOrDefault(ISpecification<T> specification);
+        Task<IEnumerable<T>> List(ISpecification<T> specification);
+        Task Add(T entity);
+        Task Delete(T entity);
+        Task Edit(T entity);
     }
 }

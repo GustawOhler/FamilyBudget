@@ -1,191 +1,160 @@
-// using System.Diagnostics;
-// using System.Text.Json;
-// using System.Text.Json.Serialization;
-// using AutoMapper;
-// using FamilyBudget.Common;
-// using FamilyBudget.DTOs;
-// using FamilyBudget.Models;
-// using Microsoft.AspNetCore.Authorization;
-// using Microsoft.AspNetCore.Identity;
-// using Microsoft.AspNetCore.Mvc;
-// using Microsoft.EntityFrameworkCore;
-// using Microsoft.EntityFrameworkCore.Query;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using AutoMapper;
+using FamilyBudget.Common;
+using FamilyBudget.DTOs;
+using FamilyBudgetApplication.BudgetOperations;
+using FamilyBudgetDomain.Exceptions;
+using FamilyBudgetApplication.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using Application.BudgetOperations.DTOs;
+using FamilyBudgetApplication.BudgetOperations.DTOs;
+using FamilyBudgetApplication.BalanceChangeOperations.DTOs;
 
-// namespace FamilyBudget.Controllers
-// {
-//     [Route("api/budgets")]
-//     [ApiController]
-//     [Authorize]
-//     public class BudgetController : ControllerBase
-//     {
-//         private readonly UserManager<User> userManager;
-//         private readonly FamilyBudgetDbContext dbContext;
-//         private readonly IConfiguration configuration;
-//         private readonly IMapper mapper;
+namespace FamilyBudget.Controllers
+{
+    [Route("api/budgets")]
+    [ApiController]
+    [Authorize]
+    public class BudgetController : ControllerBase
+    {
+        private readonly IConfiguration _configuration;
+        private readonly IMapper _mapper;
+        private readonly IBudgetRetriever _budgetRetriever;
+        private readonly IAuthorizationVerifier _authVerifier;
+        private readonly IBalanceChangeManager _entityCreator;
+        private readonly IBalanceChangesRetriever _balanceChangesRetriever;
+        private readonly IBudgetManager _budgetManager;
 
-//         public BudgetController(UserManager<User> userManager, FamilyBudgetDbContext dbContext, IConfiguration configuration, IMapper mapper)
-//         {
-//             this.userManager = userManager;
-//             this.dbContext = dbContext;
-//             this.configuration = configuration;
-//             this.mapper = mapper;
-//         }
+        public BudgetController(IConfiguration configuration, IMapper mapper, IBudgetRetriever budgetRetriever, IAuthorizationVerifier authVerifier, IBalanceChangeManager entityCreator, IBalanceChangesRetriever balanceChangesRetriever, IBudgetManager budgetManager)
+        {
+            _configuration = configuration;
+            _mapper = mapper;
+            _budgetRetriever = budgetRetriever;
+            _authVerifier = authVerifier;
+            _entityCreator = entityCreator;
+            _balanceChangesRetriever = balanceChangesRetriever;
+            _budgetManager = budgetManager;
+        }
 
-//         [HttpPost]
-//         [Route("~/api/users/{userId}/budgets/search")]
-//         public async Task<IActionResult> GetBudgetsForUser([FromRoute] int userId, [FromBody] BudgetSearchRequest budgetSearchRequest)
-//         {
-//             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-//             if (!AuthorizationChecker.CheckAuthorizationForUser(authUser, userId))
-//             {
-//                 return Unauthorized("Authorized user is not identical to one who's resources are requested.");
-//             }
+        [HttpGet]
+        [Route("~/api/users/{userId}/budgets")]
+        public async Task<IActionResult> GetBudgetsForUser([FromRoute] int userId, [FromQuery] BudgetSearchQuery budgetSearchQuery)
+        {
+            try
+            {
+                var budgetSearchInput = _mapper.Map<BudgetsForUserInput>(budgetSearchQuery);
+                budgetSearchInput.RequestedUserId = userId;
+                budgetSearchInput.RequestingUserName = User.Identity.Name;
 
-//             var requestedUser = await dbContext.Users.Where(u => u.Id == userId).SingleOrDefaultAsync();
+                var budgets = await _budgetRetriever.GetBudgetsForUser(budgetSearchInput);
 
-//             if (requestedUser == null)
-//             {
-//                 return NotFound("Given user does not exist");
-//             }
+                return Content(CustomJsonSerializer.SerializeIgnoreCycles(new { budgets = _mapper.Map<List<BudgetResponse>>(budgets) }), "application/json");
+            }
+            catch (ResourceNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (AuthorizationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
 
-//             if (budgetSearchRequest.Limit > 250)
-//             {
-//                 return BadRequest("Can't retrieve more than 250 rows");
-//             }
+        [HttpGet]
+        [Route("{budgetId}")]
+        public async Task<IActionResult> GetBudgetDetails([FromRoute] int budgetId)
+        {
+            try
+            {
+                var budget = await _budgetRetriever.GetBudget(User.Identity.Name, budgetId);
+                return Content(CustomJsonSerializer.SerializeIgnoreCycles(_mapper.Map<BudgetResponse>(budget)), "application/json");
+            }
+            catch (ResourceNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (AuthorizationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
 
-//             var budgetsQuery = dbContext.Budgets
-//                 .Include(b => b.BalanceChanges).Include(b => b.Members)
-//                 .Where(b => b.Members.Contains(requestedUser))
-//                 .Skip(budgetSearchRequest.Offset)
-//                 .Take(budgetSearchRequest.Limit);
+        [HttpPost]
+        public async Task<IActionResult> CreateBudget([FromBody] BudgetCreationRequest budgetCreationData)
+        {
+            var budgetInput = _mapper.Map<NewBudgetInput>(budgetCreationData);
+            budgetInput.AdminUsername = User.Identity.Name;
+            var budget = await _budgetManager.CreateBudget(budgetInput);
 
-//             if (budgetSearchRequest.Name != null)
-//             {
-//                 budgetsQuery = budgetsQuery.Where(b => b.Name.Contains(budgetSearchRequest.Name));
-//             }
+            return Content(CustomJsonSerializer.SerializeIgnoreCycles(_mapper.Map<BudgetResponse>(budget)), "application/json");
+        }
 
-//             var budgets = await budgetsQuery.ToListAsync();
+        [HttpGet]
+        [Route("{budgetId}/balanceChanges")]
+        public async Task<IActionResult> GetBalanceChanges([FromRoute] int budgetId, [FromQuery] BalanceChangeSearchQuery searchQuery)
+        {
+            try
+            {
+                var balanceChangeSearchInput = _mapper.Map<BalanceChangesForBudgetInput>(searchQuery);
+                balanceChangeSearchInput.RequestingUserName = User.Identity.Name;
+                balanceChangeSearchInput.BudgetId = budgetId;
 
-//             return Content(CustomJsonSerializer.SerializeIgnoreCycles(new { budgets = mapper.Map<List<BudgetResponse>>(budgets) }), "application/json");
-//         }
+                var balanceChanges = await _balanceChangesRetriever.GetBalanceChangesForBudget(balanceChangeSearchInput);
+                return Content(CustomJsonSerializer.SerializeIgnoreCycles(new { budgets = _mapper.Map<List<BalanceChangeResponse>>(balanceChanges) }), "application/json");
+            }
+            catch (AuthorizationException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
+        }
 
-//         [HttpGet]
-//         [Route("{budgetId}")]
-//         public async Task<IActionResult> GetBudgetDetails([FromRoute] int budgetId)
-//         {
-//             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-//             var requestedBudget = await dbContext.Budgets.Include(b => b.BalanceChanges).Include(b => b.Members).Include(b => b.Admin).Where(b => b.Id == budgetId).SingleAsync();
+        [HttpPost]
+        [Route("{budgetId}/balanceChanges")]
+        public async Task<IActionResult> AddBalanceChange([FromRoute] int budgetId, [FromBody] BalanceChangeRequest balanceChangeRequest)
+        {
+            try
+            {
+                var balanceChangeInput = _mapper.Map<NewBalanceChangeInput>(balanceChangeRequest);
+                balanceChangeInput.BudgetId = budgetId;
+                balanceChangeInput.RequestingUserName = User.Identity.Name;
+                var balanceChangeDb = await _entityCreator.CreateBalanceChange(balanceChangeInput);
+                return Content(CustomJsonSerializer.SerializeIgnoreCycles(_mapper.Map<BalanceChangeResponse>(balanceChangeDb)), "application/json");
+            }
+            catch (AuthorizationException authEx)
+            {
+                return Unauthorized(authEx.Message);
+            }
+            catch (FamilyBudgetDomain.Exceptions.ValidationException valExc)
+            {
+                return BadRequest(valExc.Message);
+            }
+        }
 
-//             if (!AuthorizationChecker.CheckAuthorizationForBudget(authUser, requestedBudget))
-//             {
-//                 return Unauthorized("User is not one of budget members.");
-//             }
-
-//             return Content(CustomJsonSerializer.SerializeIgnoreCycles(mapper.Map<BudgetResponse>(requestedBudget)), "application/json");
-//         }
-
-//         [HttpPost]
-//         public async Task<IActionResult> CreateBudget([FromBody] BudgetCreationRequest budgetCreationData)
-//         {
-//             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-
-//             var budget = mapper.Map<Budget>(budgetCreationData);
-//             budget.Admin = authUser;
-//             budget.Members.Add(authUser);
-
-//             dbContext.Budgets.Add(budget);
-//             await dbContext.SaveChangesAsync();
-
-//             return Content(CustomJsonSerializer.SerializeIgnoreCycles(mapper.Map<BudgetResponse>(budget)), "application/json");
-//         }
-
-//         [HttpPost]
-//         [Route("{budgetId}/balanceChanges/search")]
-//         public async Task<IActionResult> SearchBalanceChanges([FromRoute] int budgetId, [FromBody] BalanceChangeSearchRequest searchRequest)
-//         {
-//             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-//             var requestedBudget = await dbContext.Budgets.Include(b => b.BalanceChanges).Include(b => b.Members).Include(b => b.Admin).Where(b => b.Id == budgetId).SingleAsync();
-
-//             if (!AuthorizationChecker.CheckAuthorizationForBudget(authUser, requestedBudget))
-//             {
-//                 return Unauthorized("User is not one of budget members.");
-//             }
-
-//             if (searchRequest.Limit > 250)
-//             {
-//                 return BadRequest("Can't retrieve more than 250 rows");
-//             }
-
-//             var query = dbContext.BalanceChanges.Where(bc => bc.Budget == requestedBudget).Skip(searchRequest.Offset).Take(searchRequest.Limit);
-
-//             if (searchRequest.Name != null)
-//             {
-//                 query = query.Where(bc => bc.Name.Contains(searchRequest.Name));
-//             }
-
-//             var balanceChanges = await query.ToListAsync();
-
-//             return Content(JsonSerializer.Serialize(new { budgets = mapper.Map<List<BalanceChangeResponse>>(balanceChanges) }), "application/json");
-//         }
-
-//         [HttpPost]
-//         [Route("{budgetId}/balanceChanges")]
-//         public async Task<IActionResult> AddBalanceChange([FromRoute] int budgetId, [FromBody] BalanceChangeRequest balanceChangeRequest)
-//         {
-//             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-//             var budget = await dbContext.Budgets.Include(b => b.Members).Where(b => b.Id == budgetId).SingleAsync();
-
-//             if (!AuthorizationChecker.CheckAuthorizationForBudget(authUser, budget))
-//             {
-//                 return Unauthorized("User is not one of budget members.");
-//             }
-
-//             var balanceChangeDb = mapper.Map<BalanceChange>(balanceChangeRequest);
-//             balanceChangeDb.Budget = budget;
-//             balanceChangeDb.Category = await dbContext.Categories.Where(c => c.Id == balanceChangeRequest.CategoryId).SingleOrDefaultAsync();
-
-//             if (balanceChangeDb.Type == Common.BalanceChangeType.Income)
-//             {
-//                 budget.Balance += balanceChangeDb.Amount;
-//             }
-//             else
-//             {
-//                 budget.Balance -= balanceChangeDb.Amount;
-//             }
-
-//             dbContext.BalanceChanges.Add(balanceChangeDb);
-//             await dbContext.SaveChangesAsync();
-
-//             return Content(CustomJsonSerializer.SerializeIgnoreCycles(mapper.Map<BalanceChangeResponse>(balanceChangeDb)), "application/json");
-//         }
-
-//         [HttpPatch]
-//         [Route("{budgetId}/users")]
-//         public async Task<IActionResult> AddUsersToBudget([FromRoute] int budgetId, [FromBody] UserListRequest newMembers)
-//         {
-//             var authUser = await userManager.FindByNameAsync(User.Identity!.Name!);
-//             var budget = await dbContext.Budgets.Include(b => b.Members).Where(b => b.Id == budgetId).SingleAsync();
-
-//             if (!AuthorizationChecker.CheckAuthorizationForBudget(authUser, budget))
-//             {
-//                 return Unauthorized("User is not one of budget members.");
-//             }
-
-//             if (budget.AdminId != authUser.Id)
-//             {
-//                 return Unauthorized("User does not have rights to perform this operation");
-//             }
-
-//             var newMembersDb = await dbContext.Users.Where(u => newMembers.UserIds.Contains(u.Id)).ToListAsync();
-
-//             var currentMembers = budget.Members.ToList();
-
-//             var concatMembers = currentMembers;
-//             concatMembers.AddRange(newMembersDb);
-//             budget.Members = concatMembers.Distinct().ToList();
-//             dbContext.SaveChanges();
-
-//             return Content(CustomJsonSerializer.SerializeIgnoreCycles(mapper.Map<BudgetResponse>(budget)), "application/json");
-//         }
-//     }
-// }
+        [HttpPost]
+        [Route("{budgetId}/users")]
+        public async Task<IActionResult> AddUsersToBudget([FromRoute] int budgetId, [FromBody] UserListRequest newMembers)
+        {
+            try
+            {
+                var budgetMembersInput = new NewBudgetMembersInput()
+                {
+                    BudgetId = budgetId,
+                    RequestingUserName = User.Identity.Name,
+                    UserIds = newMembers.UserIds
+                };
+                var budgetWithNewMembers = await _budgetManager.AddBudgetMembers(budgetMembersInput);
+                return Content(CustomJsonSerializer.SerializeIgnoreCycles(_mapper.Map<BudgetResponse>(budgetWithNewMembers)), "application/json");
+            }
+            catch (AuthorizationException authEx)
+            {
+                return Unauthorized(authEx.Message);
+            }
+        }
+    }
+}

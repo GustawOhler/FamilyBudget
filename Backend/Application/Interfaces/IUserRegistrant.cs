@@ -1,7 +1,7 @@
 using System;
 using FamilyBudgetDomain.Models;
 
-namespace FamilyBudgetDomain.Interfaces
+namespace FamilyBudgetApplication.Interfaces
 {
     public interface IUserRegistrant
     {

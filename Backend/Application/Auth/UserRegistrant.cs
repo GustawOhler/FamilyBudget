@@ -1,5 +1,5 @@
 using FamilyBudgetDomain.Exceptions;
-using FamilyBudgetDomain.Interfaces;
+using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Models;
 using Microsoft.AspNetCore.Identity;
 

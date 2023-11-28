@@ -1,7 +1,7 @@
 using System;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FamilyBudgetDomain.Interfaces
+namespace FamilyBudgetApplication.Interfaces
 {
     public interface ITokenGenerator
     {

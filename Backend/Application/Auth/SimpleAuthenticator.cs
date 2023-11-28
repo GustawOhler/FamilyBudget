@@ -2,7 +2,7 @@ using FamilyBudgetDomain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using FamilyBudgetDomain.Exceptions;
-using FamilyBudgetDomain.Interfaces;
+using FamilyBudgetApplication.Interfaces;
 
 namespace FamilyBudgetApplication.Auth
 {

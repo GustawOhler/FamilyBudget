@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using FamilyBudgetDomain.Interfaces;
+using FamilyBudgetApplication.Interfaces;
 
 namespace FamilyBudgetApplication.Auth
 {

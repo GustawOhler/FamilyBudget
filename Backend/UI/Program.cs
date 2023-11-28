@@ -2,8 +2,11 @@ using System.Text;
 using Application.Auth;
 using FamilyBudget;
 using FamilyBudgetApplication.Auth;
-using FamilyBudgetDomain.Interfaces;
+using FamilyBudgetApplication.BalanceChangeOperations;
+using FamilyBudgetApplication.BudgetOperations;
+using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Models;
+using Infrastructure.Database.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -62,6 +65,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<ITokenGenerator, JwtTokenGenerator>();
 builder.Services.AddTransient<IAuthenticator, SimpleAuthenticator>();
 builder.Services.AddTransient<IUserRegistrant, UserRegistrant>();
+builder.Services.AddTransient<IRepository<User>, StandardRepository<User>>();
+builder.Services.AddTransient<IRepository<Budget>, StandardRepository<Budget>>();
+builder.Services.AddTransient<IRepository<Category>, StandardRepository<Category>>();
+builder.Services.AddTransient<IRepository<BalanceChange>, StandardRepository<BalanceChange>>();
+builder.Services.AddTransient<IAuthorizationVerifier, AuthorizationVerifier>();
+builder.Services.AddTransient<IBudgetRetriever, BudgetRetriever>();
+builder.Services.AddTransient<IBalanceChangesRetriever, BalanceChangesRetriever>();
+builder.Services.AddTransient<IBalanceChangeManager, BalanceChangeManager>();
+builder.Services.AddTransient<IBudgetManager, BudgetManager>();
 
 var app = builder.Build();
 

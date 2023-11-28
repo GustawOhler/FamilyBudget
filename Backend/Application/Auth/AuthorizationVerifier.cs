@@ -1,4 +1,4 @@
-using FamilyBudgetDomain.Interfaces;
+using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Models;
 
 namespace FamilyBudgetApplication.Auth
@@ -14,9 +14,27 @@ namespace FamilyBudgetApplication.Auth
             return true;
         }
 
+        public bool CheckAuthorizationForUser(User user, string requestingUsername)
+        {
+            if (user == null || !user.UserName.Equals(requestingUsername))
+            {
+                return false;
+            }
+            return true;
+        }
+
         public bool CheckAuthorizationForBudget(User user, Budget budget)
         {
             if (user == null || !budget.Members.Any(u => u.Id == user.Id))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public bool IsAdmin(User user, Budget budget)
+        {
+            if (user == null || budget.Admin != user)
             {
                 return false;
             }

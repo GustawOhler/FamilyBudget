@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using FamilyBudget;
 using FamilyBudgetDomain.Models;
+using FamilyBudgetInfrastructure.Database.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database.Repositories
@@ -10,43 +11,57 @@ namespace Infrastructure.Database.Repositories
     {
         public readonly FamilyBudgetDbContext _dbContext;
 
-        public StandardRepository(FamilyBudgetDbContext context){
+        public StandardRepository(FamilyBudgetDbContext context)
+        {
             _dbContext = context;
         }
 
-        public void Add(T entity)
+        public async Task Add(T entity)
         {
             _dbContext.Add(entity);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void Delete(T entity)
+        public async Task Delete(T entity)
         {
             _dbContext.Remove(entity);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
         }
 
-        public void Edit(T entity)
+        public async Task Edit(T entity)
         {
             _dbContext.Entry(entity).State = EntityState.Modified;
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
+        }
+        public async Task<IEnumerable<T>> List(ISpecification<T> specification)
+        {
+            var queryableResultWithIncludes = specification.Includes
+                .Aggregate(_dbContext.Set<T>().AsQueryable(),
+                            (current, include) => current.Include(include));
+
+            var resultsWithRestIncludes = specification.IncludeStrings
+                .Aggregate(queryableResultWithIncludes,
+                            (current, include) => current.Include(include));
+
+            var finalQuery = specification.Criteria
+                .Aggregate(resultsWithRestIncludes,
+                            (current, criterion) => current.Where(criterion));
+
+            if (specification is IPagedSpecification<T>)
+            {
+                var pagingSpec = (IPagedSpecification<T>)specification;
+                return await finalQuery
+                        .Skip(pagingSpec.PageNumber * pagingSpec.PageSize)
+                        .Take(pagingSpec.PageSize)
+                        .ToListAsync();
+            }
+            return await finalQuery.ToListAsync();
         }
 
-        public T? GetById(int id)
+        public async Task<T?> GetSingleOrDefault(ISpecification<T> specification)
         {
-            return _dbContext.Set<T>().Find(id);
-        }
-
-        public IEnumerable<T> List()
-        {
-            return _dbContext.Set<T>().AsEnumerable();
-        }
-
-        public IEnumerable<T> List(Expression<Func<T, bool>> predicate)
-        {
-            return _dbContext.Set<T>()
-               .Where(predicate)
-               .AsEnumerable();
+            var resultsList = await List(specification);
+            return resultsList.SingleOrDefault();
         }
     }
 }

@@ -6,7 +6,7 @@ using FamilyBudget.Backend.DTOs;
 using FamilyBudget.DTOs;
 using FamilyBudgetApplication.Auth;
 using FamilyBudgetDomain.Exceptions;
-using FamilyBudgetDomain.Interfaces;
+using FamilyBudgetApplication.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
