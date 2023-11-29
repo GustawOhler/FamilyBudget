@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace FamilyBudget
+namespace FamilyBudgetUI
 {
     public class FamilyBudgetDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {

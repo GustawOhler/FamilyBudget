@@ -9,12 +9,10 @@ namespace FamilyBudgetApplication.Auth
     public class SimpleAuthenticator: IAuthenticator
     {
         private readonly UserManager<User> _userManager;
-        private readonly IConfiguration _configuration;
 
-        public SimpleAuthenticator(UserManager<User> userManager, IConfiguration configuration)
+        public SimpleAuthenticator(UserManager<User> userManager)
         {
             _userManager = userManager;
-            _configuration = configuration;
         }
 
         public async Task<User> AuthenticateUser(string username, string password)

@@ -1,17 +1,19 @@
 using System.Text;
 using Application.Auth;
-using FamilyBudget;
+using FamilyBudgetUI;
 using FamilyBudgetApplication.Auth;
 using FamilyBudgetApplication.BalanceChangeOperations;
 using FamilyBudgetApplication.BudgetOperations;
 using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Models;
+using FamilyBudgetDomain.Validation;
 using Infrastructure.Database.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using AutoMapper;
 
 const string MY_CORS_POLICY = "_MyCorsPolicy";
 
@@ -31,7 +33,9 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddAutoMapper(typeof(Program));
+
+builder.Services.AddAutoMapper(typeof(FamilyBudgetUI.MappingProfile), typeof(FamilyBudgetApplication.MappingProfile));
+
 builder.Services.AddDbContext<FamilyBudgetDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("FamilyBudgetDatabase")));
 
@@ -62,6 +66,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddTransient<IObjectValidator, ObjectValidator>();
 builder.Services.AddTransient<ITokenGenerator, JwtTokenGenerator>();
 builder.Services.AddTransient<IAuthenticator, SimpleAuthenticator>();
 builder.Services.AddTransient<IUserRegistrant, UserRegistrant>();

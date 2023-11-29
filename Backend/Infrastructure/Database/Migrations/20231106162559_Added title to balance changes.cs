@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace FamilyBudget.Migrations
+namespace FamilyBudgetUI.Migrations
 {
     /// <inheritdoc />
     public partial class Addedtitletobalancechanges : Migration

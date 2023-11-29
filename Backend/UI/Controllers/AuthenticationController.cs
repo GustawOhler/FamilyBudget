@@ -2,8 +2,8 @@ using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using FamilyBudget.Backend.DTOs;
-using FamilyBudget.DTOs;
+using FamilyBudgetUI.Backend.DTOs;
+using FamilyBudgetUI.DTOs;
 using FamilyBudgetApplication.Auth;
 using FamilyBudgetDomain.Exceptions;
 using FamilyBudgetApplication.Interfaces;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
-namespace FamilyBudget.Controllers
+namespace FamilyBudgetUI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

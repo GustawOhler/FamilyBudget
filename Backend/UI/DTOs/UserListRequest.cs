@@ -1,4 +1,4 @@
-namespace FamilyBudget.DTOs
+namespace FamilyBudgetUI.DTOs
 {
     public class UserListRequest
     {

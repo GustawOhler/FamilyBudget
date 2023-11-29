@@ -4,7 +4,7 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace FamilyBudget.Migrations
+namespace FamilyBudgetUI.Migrations
 {
     /// <inheritdoc />
     public partial class Seededcategories : Migration

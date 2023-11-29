@@ -1,11 +1,11 @@
 using Application.BudgetOperations.DTOs;
 using AutoMapper;
-using FamilyBudget.DTOs;
+using FamilyBudgetUI.DTOs;
 using FamilyBudgetApplication.BalanceChangeOperations.DTOs;
 using FamilyBudgetApplication.BudgetOperations.DTOs;
 using FamilyBudgetDomain.Models;
 
-namespace FamilyBudget
+namespace FamilyBudgetUI
 {
     public class MappingProfile : Profile
     {

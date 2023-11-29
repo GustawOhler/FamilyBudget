@@ -1,6 +1,6 @@
 using FamilyBudgetDomain.Enums;
 
-namespace FamilyBudget.DTOs
+namespace FamilyBudgetUI.DTOs
 {
     public class BalanceChangeRequest
     {

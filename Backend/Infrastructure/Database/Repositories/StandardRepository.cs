@@ -1,7 +1,9 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
-using FamilyBudget;
+using FamilyBudgetUI;
 using FamilyBudgetDomain.Models;
+using FamilyBudgetDomain.Validation;
 using FamilyBudgetInfrastructure.Database.Specifications;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,14 +12,17 @@ namespace Infrastructure.Database.Repositories
     public class StandardRepository<T> : IRepository<T> where T : class, IEntityBase
     {
         public readonly FamilyBudgetDbContext _dbContext;
+        public readonly IObjectValidator _validator;
 
-        public StandardRepository(FamilyBudgetDbContext context)
+        public StandardRepository(FamilyBudgetDbContext context, IObjectValidator validator)
         {
             _dbContext = context;
+            _validator = validator;
         }
 
         public async Task Add(T entity)
         {
+            _validator.Validate(entity);
             _dbContext.Add(entity);
             await _dbContext.SaveChangesAsync();
         }
@@ -30,6 +35,7 @@ namespace Infrastructure.Database.Repositories
 
         public async Task Edit(T entity)
         {
+            _validator.Validate(entity);
             _dbContext.Entry(entity).State = EntityState.Modified;
             await _dbContext.SaveChangesAsync();
         }

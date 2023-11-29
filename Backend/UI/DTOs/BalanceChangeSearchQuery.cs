@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace FamilyBudget.DTOs
+namespace FamilyBudgetUI.DTOs
 {
     public class BalanceChangeSearchQuery
     {

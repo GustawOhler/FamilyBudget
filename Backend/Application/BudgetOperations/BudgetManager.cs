@@ -1,3 +1,4 @@
+using AutoMapper;
 using FamilyBudgetApplication.BudgetOperations.DTOs;
 using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Exceptions;
@@ -16,8 +17,9 @@ namespace FamilyBudgetApplication.BudgetOperations
         private readonly IRepository<User> _userRepository;
         private readonly UserManager<User> _userManager;
         private readonly IAuthorizationVerifier _authorizationVerifier;
+        private readonly IMapper _mapper;
 
-        public BudgetManager(IRepository<Budget> budgetRepository, UserManager<User> userManager, IAuthorizationVerifier authorizationVerifier, IRepository<Category> categoryRepository, IRepository<BalanceChange> balanceChangeRepository, IRepository<User> userRepository)
+        public BudgetManager(IRepository<Budget> budgetRepository, UserManager<User> userManager, IAuthorizationVerifier authorizationVerifier, IRepository<Category> categoryRepository, IRepository<BalanceChange> balanceChangeRepository, IRepository<User> userRepository, IMapper mapper)
         {
             _budgetRepository = budgetRepository;
             _userManager = userManager;
@@ -25,6 +27,7 @@ namespace FamilyBudgetApplication.BudgetOperations
             _categoryRepository = categoryRepository;
             _balanceChangeRepository = balanceChangeRepository;
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
         public async Task<Budget> AddBudgetMembers(NewBudgetMembersInput input)
@@ -51,12 +54,8 @@ namespace FamilyBudgetApplication.BudgetOperations
         {
             var authUser = await _userManager.FindByNameAsync(input.AdminUsername);
 
-            var budget = new Budget()
-            {
-                Name = input.Name,
-                Balance = input.Balance,
-                Admin = authUser
-            };
+            var budget = _mapper.Map<Budget>(input);
+            budget.Admin = authUser;
             budget.Members.Add(authUser);
 
             await _budgetRepository.Add(budget);

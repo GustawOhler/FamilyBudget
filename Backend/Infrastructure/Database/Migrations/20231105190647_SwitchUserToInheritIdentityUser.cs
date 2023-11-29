@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace FamilyBudget.Migrations
+namespace FamilyBudgetUI.Migrations
 {
     /// <inheritdoc />
     public partial class SwitchUserToInheritIdentityUser : Migration

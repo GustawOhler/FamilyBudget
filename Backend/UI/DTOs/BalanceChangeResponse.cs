@@ -2,7 +2,7 @@ using System;
 using FamilyBudgetDomain.Enums;
 using FamilyBudgetDomain.Models;
 
-namespace FamilyBudget.DTOs
+namespace FamilyBudgetUI.DTOs
 {
     public class BalanceChangeResponse
     {

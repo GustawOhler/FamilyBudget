@@ -1,6 +1,6 @@
 using System;
 
-namespace FamilyBudget.Backend.DTOs
+namespace FamilyBudgetUI.Backend.DTOs
 {
     public class AuthorizationResponse
     {

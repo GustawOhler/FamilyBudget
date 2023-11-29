@@ -2,8 +2,8 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AutoMapper;
-using FamilyBudget.Common;
-using FamilyBudget.DTOs;
+using FamilyBudgetUI.Common;
+using FamilyBudgetUI.DTOs;
 using FamilyBudgetApplication.BudgetOperations;
 using FamilyBudgetDomain.Exceptions;
 using FamilyBudgetApplication.Interfaces;
@@ -16,27 +16,23 @@ using Application.BudgetOperations.DTOs;
 using FamilyBudgetApplication.BudgetOperations.DTOs;
 using FamilyBudgetApplication.BalanceChangeOperations.DTOs;
 
-namespace FamilyBudget.Controllers
+namespace FamilyBudgetUI.Controllers
 {
     [Route("api/budgets")]
     [ApiController]
     [Authorize]
     public class BudgetController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private readonly IBudgetRetriever _budgetRetriever;
-        private readonly IAuthorizationVerifier _authVerifier;
         private readonly IBalanceChangeManager _entityCreator;
         private readonly IBalanceChangesRetriever _balanceChangesRetriever;
         private readonly IBudgetManager _budgetManager;
 
-        public BudgetController(IConfiguration configuration, IMapper mapper, IBudgetRetriever budgetRetriever, IAuthorizationVerifier authVerifier, IBalanceChangeManager entityCreator, IBalanceChangesRetriever balanceChangesRetriever, IBudgetManager budgetManager)
+        public BudgetController(IMapper mapper, IBudgetRetriever budgetRetriever, IBalanceChangeManager entityCreator, IBalanceChangesRetriever balanceChangesRetriever, IBudgetManager budgetManager)
         {
-            _configuration = configuration;
             _mapper = mapper;
             _budgetRetriever = budgetRetriever;
-            _authVerifier = authVerifier;
             _entityCreator = entityCreator;
             _balanceChangesRetriever = balanceChangesRetriever;
             _budgetManager = budgetManager;
