@@ -1,11 +1,8 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Linq.Expressions;
 using FamilyBudgetUI;
 using FamilyBudgetDomain.Models;
 using FamilyBudgetDomain.Validation;
-using FamilyBudgetInfrastructure.Database.Specifications;
 using Microsoft.EntityFrameworkCore;
+using FamilyBudgetDomain.Interfaces.Database;
 
 namespace Infrastructure.Database.Repositories
 {

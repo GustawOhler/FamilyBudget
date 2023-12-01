@@ -7,13 +7,12 @@ using FamilyBudgetApplication.BudgetOperations;
 using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Models;
 using FamilyBudgetDomain.Validation;
-using Infrastructure.Database.Repositories;
+using FamilyBudgetDomain.Interfaces.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using AutoMapper;
+using Infrastructure.Database.Repositories;
 
 const string MY_CORS_POLICY = "_MyCorsPolicy";
 

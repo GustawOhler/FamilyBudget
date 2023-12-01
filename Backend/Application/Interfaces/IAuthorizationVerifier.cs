@@ -5,9 +5,9 @@ namespace FamilyBudgetApplication.Interfaces
 {
     public interface IAuthorizationVerifier
     {
-        public bool CheckAuthorizationForUser(User user, int requestedUserId);
-        public bool CheckAuthorizationForUser(User user, string requestingUsername);
-        public bool CheckAuthorizationForBudget(User user, Budget budget);
+        public bool IsAuthorizedForUser(User user, int requestedUserId);
+        public bool IsAuthorizedForUser(User user, string requestingUsername);
+        public bool IsBudgetMember(User user, Budget budget);
         public bool IsAdmin(User user, Budget budget);
     }
 }

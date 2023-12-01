@@ -3,9 +3,9 @@ using FamilyBudgetDomain.Exceptions;
 using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Models;
 using FamilyBudgetInfrastructure.Database.Specifications;
-using Infrastructure.Database.Repositories;
 using Application.BudgetOperations.DTOs;
 using Microsoft.AspNetCore.Identity;
+using FamilyBudgetDomain.Interfaces.Database;
 
 namespace FamilyBudgetApplication.BudgetOperations
 {
@@ -33,7 +33,7 @@ namespace FamilyBudgetApplication.BudgetOperations
 
             var budget = await _budgetRepository.GetSingleOrDefault(new BudgetSpecification(budgetId));
 
-            if (!_authorizationVerifier.CheckAuthorizationForBudget(user, budget))
+            if (!_authorizationVerifier.IsBudgetMember(user, budget))
             {
                 throw new AuthorizationException("User is not allowed for this resource");
             }
@@ -48,7 +48,7 @@ namespace FamilyBudgetApplication.BudgetOperations
             {
                 throw new ResourceNotFoundException("Requested user does not exist");
             }
-            if (!_authorizationVerifier.CheckAuthorizationForUser(requestedUser, input.RequestingUserName))
+            if (!_authorizationVerifier.IsAuthorizedForUser(requestedUser, input.RequestingUserName))
             {
                 throw new AuthorizationException("User is not allowed for this resource");
             }

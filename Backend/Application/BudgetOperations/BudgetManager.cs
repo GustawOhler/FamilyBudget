@@ -4,7 +4,7 @@ using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Exceptions;
 using FamilyBudgetDomain.Models;
 using FamilyBudgetInfrastructure.Database.Specifications;
-using Infrastructure.Database.Repositories;
+using FamilyBudgetDomain.Interfaces.Database;
 using Microsoft.AspNetCore.Identity;
 
 namespace FamilyBudgetApplication.BudgetOperations

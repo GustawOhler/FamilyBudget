@@ -3,7 +3,7 @@ using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Exceptions;
 using FamilyBudgetDomain.Models;
 using FamilyBudgetInfrastructure.Database.Specifications;
-using Infrastructure.Database.Repositories;
+using FamilyBudgetDomain.Interfaces.Database;
 using Microsoft.AspNetCore.Identity;
 
 namespace FamilyBudgetApplication.BalanceChangeOperations
@@ -28,7 +28,7 @@ namespace FamilyBudgetApplication.BalanceChangeOperations
             var authUser = await _userManager.FindByNameAsync(input.RequestingUserName);
             var budget = await _budgetRepository.GetSingleOrDefault(new BudgetSpecification(input.BudgetId));
 
-            if (!_authorizationVerifier.CheckAuthorizationForBudget(authUser, budget))
+            if (!_authorizationVerifier.IsBudgetMember(authUser, budget))
             {
                 throw new AuthorizationException("User is not one of budget members.");
             }

@@ -46,9 +46,10 @@ namespace FamilyBudgetUI.Controllers
                     Id = user.Id
                 });
             }
-            catch (AuthenticationException e)
+            catch (Exception e) when (e is AuthenticationException ||
+                                      e is ResourceNotFoundException)
             {
-                return BadRequest(e.Message);
+                return BadRequest("Wrong credentials");
             }
         }
 

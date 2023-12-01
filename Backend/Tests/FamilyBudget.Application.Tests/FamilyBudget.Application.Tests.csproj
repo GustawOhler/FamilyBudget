@@ -24,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Backend\Domain\FamilyBudgetDomain.csproj" />
+    <ProjectReference Include="..\..\Application\FamilyBudgetApplication.csproj" />
+    <ProjectReference Include="..\..\Domain\FamilyBudgetDomain.csproj" />
   </ItemGroup>
 
 </Project>

@@ -5,7 +5,7 @@ namespace FamilyBudgetApplication.Auth
 {
     public class AuthorizationVerifier : IAuthorizationVerifier
     {
-        public bool CheckAuthorizationForUser(User user, int requestedUserId)
+        public bool IsAuthorizedForUser(User user, int requestedUserId)
         {
             if (user == null || user.Id != requestedUserId)
             {
@@ -14,7 +14,7 @@ namespace FamilyBudgetApplication.Auth
             return true;
         }
 
-        public bool CheckAuthorizationForUser(User user, string requestingUsername)
+        public bool IsAuthorizedForUser(User user, string requestingUsername)
         {
             if (user == null || !user.UserName.Equals(requestingUsername))
             {
@@ -23,7 +23,7 @@ namespace FamilyBudgetApplication.Auth
             return true;
         }
 
-        public bool CheckAuthorizationForBudget(User user, Budget budget)
+        public bool IsBudgetMember(User user, Budget budget)
         {
             if (user == null || !budget.Members.Any(u => u.Id == user.Id))
             {

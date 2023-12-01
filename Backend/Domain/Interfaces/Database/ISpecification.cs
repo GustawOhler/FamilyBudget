@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using FamilyBudgetDomain.Models;
 
-namespace FamilyBudgetInfrastructure.Database.Specifications
+namespace FamilyBudgetDomain.Interfaces.Database
 {
     public interface ISpecification<T> where T : IEntityBase
     {

@@ -20,7 +20,7 @@ namespace FamilyBudgetApplication.Auth
             var user = await _userManager.FindByNameAsync(username);
 
             if (user == null)
-                throw new AuthenticationException("There's no user with given username");
+                throw new ResourceNotFoundException("There's no user with given username");
 
             if (!await _userManager.CheckPasswordAsync(user, password))
                 throw new AuthenticationException("Wrong password");

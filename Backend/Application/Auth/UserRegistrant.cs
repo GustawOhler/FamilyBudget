@@ -26,7 +26,7 @@ namespace Application.Auth
             };
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
-                throw new InnerQuietException(result.Errors);
+                throw new InnerQuietException(result.Errors.Select(x => x.Description));
             return user;
         }
     }

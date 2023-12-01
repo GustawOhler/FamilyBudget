@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FamilyBudget", "Backend\UI\FamilyBudgetUI.csproj", "{422CAD0E-0C18-4595-9781-5858B9DD2735}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyBudget.Tests", "FamilyBudget.Tests\FamilyBudget.Tests.csproj", "{845C2CB0-3394-4A81-8168-E0456421A89F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FamilyBudget.Tests", "Backend\Tests\FamilyBudget.Application.Tests\FamilyBudget.Application.Tests.csproj", "{845C2CB0-3394-4A81-8168-E0456421A89F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{99A535AB-E1D0-436B-B72C-143A073CDCEA}"
 EndProject

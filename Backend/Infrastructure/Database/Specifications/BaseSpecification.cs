@@ -1,5 +1,5 @@
-using System;
 using System.Linq.Expressions;
+using FamilyBudgetDomain.Interfaces.Database;
 using FamilyBudgetDomain.Models;
 
 namespace FamilyBudgetInfrastructure.Database.Specifications

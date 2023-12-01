@@ -1,8 +1,6 @@
-using System.Linq.Expressions;
 using FamilyBudgetDomain.Models;
-using FamilyBudgetInfrastructure.Database.Specifications;
 
-namespace Infrastructure.Database.Repositories
+namespace FamilyBudgetDomain.Interfaces.Database
 {
     public interface IRepository<T> where T : IEntityBase
     {

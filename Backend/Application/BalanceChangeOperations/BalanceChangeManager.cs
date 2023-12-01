@@ -6,7 +6,7 @@ using FamilyBudgetApplication.Interfaces;
 using FamilyBudgetDomain.Enums;
 using FamilyBudgetDomain.Models;
 using FamilyBudgetInfrastructure.Database.Specifications;
-using Infrastructure.Database.Repositories;
+using FamilyBudgetDomain.Interfaces.Database;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
 
@@ -36,7 +36,7 @@ namespace FamilyBudgetApplication.BalanceChangeOperations
             var authUser = await _userManager.FindByNameAsync(input.RequestingUserName);
             var budget = await _budgetRepository.GetSingleOrDefault(new BudgetSpecification(input.BudgetId));
 
-            if (!_authorizationVerifier.CheckAuthorizationForBudget(authUser, budget))
+            if (!_authorizationVerifier.IsBudgetMember(authUser, budget))
             {
                 throw new AuthorizationException("User is not allowed to manage this budget");
             }
