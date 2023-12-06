@@ -2,7 +2,7 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace FamilyBudgetUI.Common
+namespace FamilyBudgetApplication.Common
 {
     public static class CustomJsonSerializer
     {

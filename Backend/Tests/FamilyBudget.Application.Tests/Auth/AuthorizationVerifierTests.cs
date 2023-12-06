@@ -18,7 +18,6 @@ namespace FamilyBudget.Application.Tests.Auth
             var validUser = ReadyObjects.Users.ValidUser;
             int validId = ReadyObjects.Users.VALID_USER_ID;
 
-
             // Act
             bool result = _authorizationVerifier.IsAuthorizedForUser(validUser, validId);
 
@@ -32,7 +31,6 @@ namespace FamilyBudget.Application.Tests.Auth
             // Arrange
             var validUser = ReadyObjects.Users.ValidUser;
             int invalidId = 99;
-
 
             // Act
             bool result = _authorizationVerifier.IsAuthorizedForUser(validUser, invalidId);
@@ -48,7 +46,6 @@ namespace FamilyBudget.Application.Tests.Auth
             var validUser = ReadyObjects.Users.ValidUser;
             string invalidUsername = "Invalid";
 
-
             // Act
             bool result = _authorizationVerifier.IsAuthorizedForUser(validUser, invalidUsername);
 
@@ -62,7 +59,6 @@ namespace FamilyBudget.Application.Tests.Auth
             // Arrange
             var validUser = ReadyObjects.Users.ValidUser;
             string validUsername = ReadyObjects.Users.VALID_USERNAME;
-
 
             // Act
             bool result = _authorizationVerifier.IsAuthorizedForUser(validUser, validUsername);
