@@ -6,16 +6,15 @@ services:
   sqldata:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      - SA_PASSWORD="testing)_password1("
       - ACCEPT_EULA=Y
     ports:
       - "5434:1433"
-  migrations:
-    image: familybudget
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: dotnet FamilyBudget.dll ef database update
+    volumes:
+      - db_data:/var/opt/mssql
+      - ./run-script-db.sh:/usr/local/bin/entrypoint.sh
+    entrypoint: /usr/local/bin/entrypoint.sh
+    secrets:
+      - db_password
   familybudget:
     image: familybudget
     build:
@@ -28,4 +27,18 @@ services:
       - 5001:5001
     depends_on:
       - sqldata
-    command: dotnet FamilyBudget.dll
+    entrypoint: /usr/local/bin/entrypoint.sh
+    volumes:
+      - ./run-script.sh:/usr/local/bin/entrypoint.sh
+    secrets:
+      - jwt_secret
+      - db_password
+
+secrets:
+  jwt_secret:
+    file: ./.secretStorage/secrets/JWTSecret.txt
+  db_password:
+    file: ./.secretStorage/secrets/DbPassword.txt
+
+volumes:
+  db_data:

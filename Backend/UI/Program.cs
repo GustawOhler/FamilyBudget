@@ -36,7 +36,7 @@ builder.Services.AddControllers();
 builder.Services.AddAutoMapper(typeof(FamilyBudgetUI.MappingProfile), typeof(FamilyBudgetApplication.MappingProfile));
 
 builder.Services.AddDbContext<FamilyBudgetDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("FamilyBudgetDatabase")));
+        options.UseSqlServer(config["ConnectionStrings_FamilyBudgetDatabase"]));
 
 builder.Services.AddIdentityCore<User>()
         .AddEntityFrameworkStores<FamilyBudgetDbContext>()
@@ -53,7 +53,7 @@ builder.Services.AddAuthentication(x =>
     {
         ValidIssuer = config["JWT:ValidIssuer"],
         ValidAudience = config["JWT:ValidAudience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Secret"]!)),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT_Secret"]!)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,

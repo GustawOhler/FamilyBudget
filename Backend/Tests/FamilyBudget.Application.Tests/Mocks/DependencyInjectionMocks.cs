@@ -25,7 +25,7 @@ namespace FamilyBudget.Application.Tests.Mocks
         public static Mock<IConfiguration> GetConfigurationForJWTMock()
         {
             var configurationMock = new Mock<IConfiguration>();
-            configurationMock.Setup(c => c["JWT:Secret"]).Returns("UXH8XxQQp2NQ7enhG0wMdqqcG8uIn1bU");
+            configurationMock.Setup(c => c["JWT_Secret"]).Returns("UXH8XxQQp2NQ7enhG0wMdqqcG8uIn1bU");
             configurationMock.Setup(c => c["JWT:ValidIssuer"]).Returns("Issuer");
             configurationMock.Setup(c => c["JWT:ValidAudience"]).Returns("Audience");
             return configurationMock;

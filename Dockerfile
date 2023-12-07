@@ -5,19 +5,18 @@ WORKDIR /App
 # Copy everything
 COPY . ./
 # Restore as distinct layers
-RUN dotnet restore "./FamilyBudget.Backend/FamilyBudget.csproj"
+RUN dotnet restore "./Backend/UI/FamilyBudgetUI.csproj"
 # Build and publish a release
-RUN dotnet publish "./FamilyBudget.Backend/FamilyBudget.csproj" -c Release -o out
+RUN dotnet publish "./Backend/UI/FamilyBudgetUI.csproj" -c Release -o out
 
-RUN dotnet user-secrets init --project "./FamilyBudget.Backend/FamilyBudget.csproj"
-RUN dotnet user-secrets set "JWT:Secret" "tC3byUseoajbwB69b0vsdJnRjsbTK7zC" --project "./FamilyBudget.Backend/FamilyBudget.csproj"
-RUN dotnet user-secrets set "ConnectionStrings:FamilyBudgetDatabase" "Server=localhost:1433;Database=master;User id=SA;Password=testing_password;Trust Server Certificate=true;" --project "./FamilyBudget.Backend/FamilyBudget.csproj"
+RUN dotnet tool install --global dotnet-ef --version 7.*
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+RUN dotnet ef migrations bundle --project "./Backend/UI/FamilyBudgetUI.csproj" --output "./out/bundle.exe"
 
 # Serve stage
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
 WORKDIR /App
 COPY --from=build-env /App/out .
 
-# EXPOSE 5001
-
-# ENTRYPOINT ["dotnet", "FamilyBudget.dll"]
+EXPOSE 5001
