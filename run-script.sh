@@ -5,7 +5,9 @@ DB_CONNECTION="Server=sqldata,1433;Database=master;User id=SA;Password=$DB_PASSW
 export ConnectionStrings_FamilyBudgetDatabase="$DB_CONNECTION"
 # Set JWT Secret as env variable
 export JWT_Secret=$(cat /run/secrets/jwt_secret)
+# Set Ssl password
+export ASPNETCORE_Kestrel__Certificates__Default__Password=$(cat /run/secrets/ssl_password)
 # Perform migrations
 ./bundle.exe --connection "$DB_CONNECTION"
 # Run web app
-dotnet FamilyBudgetUI.dll --launch-profile "http-docker"
+dotnet FamilyBudgetUI.dll --launch-profile "https-docker"

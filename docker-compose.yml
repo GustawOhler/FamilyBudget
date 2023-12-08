@@ -1,5 +1,3 @@
-# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
-
 version: "3.4"
 
 services:
@@ -21,24 +19,29 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - ASPNETCORE_HTTP_PORT=http://+:5001
-      - ASPNETCORE_URLS=http://+:5001
+      - ASPNETCORE_URLS=https://+:7134;http://+:5064
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/.certificates/https/familybudget.pfx
     ports:
-      - 5001:5001
+      - 5064:5064
+      - 7134:7134
     depends_on:
       - sqldata
     entrypoint: /usr/local/bin/entrypoint.sh
     volumes:
       - ./run-script.sh:/usr/local/bin/entrypoint.sh
+      - ./.certificates/https:/.certificates/https:ro
     secrets:
       - jwt_secret
       - db_password
+      - ssl_password
 
 secrets:
   jwt_secret:
     file: ./.secretStorage/secrets/JWTSecret.txt
   db_password:
     file: ./.secretStorage/secrets/DbPassword.txt
+  ssl_password:
+    file: ./.secretStorage/secrets/SslPassword.txt
 
 volumes:
   db_data:

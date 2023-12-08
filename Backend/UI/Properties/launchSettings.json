@@ -44,5 +44,12 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5064"
     },
+    "https-docker": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://localhost:7134;http://localhost:5064",
+    },
   }
 }
