@@ -1,5 +1,6 @@
 import "@/styles/customBootstrap.scss";
 import "@/styles/common.scss";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 import type { AppProps } from "next/app";
 import AuthRequiredContent from "@/components/AuthRequiredContent";

@@ -1,9 +1,11 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
+import AddNewBudgetButton from "@/components/AddNewBudgetButton";
 import { AuthContext } from "@/components/AuthRequiredContent";
 import { Budget } from "@/types/budget";
 import BudgetSticker from "@/components/BudgetSticker";
 import Head from "next/head";
+import UserOverlay from "@/components/UserOverlay";
 import { getBudgetsForUser } from "@/APIConnection/ApiConnector";
 
 const Index: FunctionComponent = () => {
@@ -27,11 +29,15 @@ const Index: FunctionComponent = () => {
         <meta name="description" content="Family Budget - app for planing budget with your family and friends" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
+      <UserOverlay />
       <main className="container-xl py-xl-3 d-flex flex-column justify-content-start align-items-center transparent-pane rounded h-100 overflow-auto">
         <div className="row w-100 g-3">
           {budgets.map((budget) => (
             <BudgetSticker id={budget.Id} name="Test" admin={budget.Admin} members={budget.Members} key={budget.Id} />
           ))}
+        </div>
+        <div className="row w-100">
+          <AddNewBudgetButton />
         </div>
       </main>
     </>

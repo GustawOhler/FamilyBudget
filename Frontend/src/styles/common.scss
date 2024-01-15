@@ -7,3 +7,9 @@
 .standard-box-shadow {
   box-shadow: 2px 2px 2px rgb(41, 41, 41);
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

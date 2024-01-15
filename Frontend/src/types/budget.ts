@@ -6,4 +6,5 @@ export type Budget = {
   Admin: User;
   Members: User[];
   BalanceChanges: any;
+  Name: string;
 };
