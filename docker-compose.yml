@@ -20,7 +20,9 @@ services:
       dockerfile: Dockerfile
     environment:
       - ASPNETCORE_URLS=https://+:7134;http://+:5064
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/.certificates/https/familybudget.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/certificate.crt
+      - ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/https/certificate.key
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - 5064:5064
       - 7134:7134
@@ -29,7 +31,7 @@ services:
     entrypoint: /usr/local/bin/entrypoint.sh
     volumes:
       - ./run-script.sh:/usr/local/bin/entrypoint.sh
-      - ./.certificates/https:/.certificates/https:ro
+      - ./.certificates/https:/https:ro
     secrets:
       - jwt_secret
       - db_password

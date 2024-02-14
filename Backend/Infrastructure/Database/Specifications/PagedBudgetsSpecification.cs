@@ -12,6 +12,7 @@ namespace FamilyBudgetInfrastructure.Database.Specifications
                 AddCriteria(b => b.Name.Contains(name));
             }
             AddInclude(b => b.Members);
+            AddInclude(b => b.BalanceChanges);
         }
     }
 }

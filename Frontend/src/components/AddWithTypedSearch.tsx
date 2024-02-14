@@ -5,13 +5,8 @@ import { SingleValue } from "react-select";
 import { User } from "@/types/user";
 import { searchUsers } from "@/APIConnection/ApiConnector";
 
-type IdNamePair = {
-  Id: number;
-  Name: string;
-};
-
 interface AddButtonWithTypedSearchProps {
-  searchFn: (input: string) => Promise<IdNamePair[]>;
+  searchFn: OptionSearchFn;
   addFn: (id: number) => void;
 }
 
@@ -19,13 +14,13 @@ const AddButtonWithTypedSearch: FunctionComponent<AddButtonWithTypedSearchProps>
   const [isSearching, setSearchingState] = useState(false);
 
   const loadOptions = async (inputValue: string) => {
-    let users = await searchUsers(inputValue);
+    let users = await searchFn(inputValue);
     return users;
   };
 
-  const onChange = (newValue: SingleValue<User>) => {
+  const onChange = (newValue: SingleValue<OptionType>) => {
     if (newValue) {
-      addFn(newValue.id);
+      addFn(newValue.value);
       setSearchingState(false);
     }
   };
@@ -34,8 +29,6 @@ const AddButtonWithTypedSearch: FunctionComponent<AddButtonWithTypedSearchProps>
     return (
       <AsyncSelect
         loadOptions={loadOptions}
-        getOptionLabel={(user) => user.UserName}
-        getOptionValue={(user) => user.id.toString()}
         defaultOptions={false}
         onChange={onChange}
         className="w-100"

@@ -1,4 +1,5 @@
 import { Budget } from "@/types/budget";
+import { Category } from "@/types/category";
 import { User } from "@/types/user";
 import { UserDetails } from "@/components/AuthRequiredContent";
 import moment from "moment";
@@ -17,7 +18,7 @@ function GetBudgetMock(): Budget {
   return {
     Admin: GetUserMock(),
     Balance: 100,
-    BalanceChanges: [],
+    balanceChanges: [],
     Id: 1,
     Members: [GetUserMock()],
     Name: "Very important Budget",
@@ -25,38 +26,44 @@ function GetBudgetMock(): Budget {
 }
 
 export async function logInApp(username: string, password: string): Promise<UserDetails> {
-  // const rawResponse = await fetch(BASE_URL + "/api/authentication/login", {
-  //   method: "POST",
-  //   mode: "cors",
-  //   body: JSON.stringify({
-  //     username,
-  //     password,
-  //   }),
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  // });
-  // const jsonResponse: UserDetails = await rawResponse.json();
-  const jsonResponse: UserDetails = {
-    expirationDate: moment().add(30, "m").toDate(),
-    id: 1,
-    token: "Randomstringtoken",
-  };
+  const rawResponse = await fetch(BASE_URL + "/api/authentication/login", {
+    method: "POST",
+    mode: "cors",
+    body: JSON.stringify({
+      username,
+      password,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  const jsonResponse: UserDetails = await rawResponse.json();
   return jsonResponse;
 }
 
-export async function getBudgetsForUser(userId: number, token: string): Promise<Budget[]> {
-  // const rawResponse = await fetch(BASE_URL + `/api/users/${userId}/budgets`, {
-  //   method: "GET",
-  //   mode: "cors",
-  //   headers: {
-  //     authorization: `Bearer ${token}`,
-  //   },
-  // });
-  // const jsonResponse: { budgets: Budget[] } = await rawResponse.json();
-  const jsonResponse = {
-    budgets: [GetBudgetMock(), GetBudgetMock(), GetBudgetMock(), GetBudgetMock()],
+export async function getBudgetsForUser(
+  userId: number,
+  token: string,
+  pageNumber: number,
+  pageSize: number = 20,
+  name?: string
+): Promise<Budget[]> {
+  let queryObject: Record<string,string> = {
+    pageNumber: pageNumber.toString(),
+    pageSize: pageSize.toString(),
   };
+  if (name) {
+    queryObject["name"] = name;
+  }
+
+  const rawResponse = await fetch(BASE_URL + `/api/users/${userId}/budgets?` + new URLSearchParams(queryObject), {
+    method: "GET",
+    mode: "cors",
+    headers: {
+      authorization: `Bearer ${token}`,
+    },
+  });
+  const jsonResponse: { budgets: Budget[] } = await rawResponse.json();
   return jsonResponse.budgets;
 }
 
@@ -83,6 +90,16 @@ export async function searchUsers(username: string): Promise<User[]> {
     {
       id: 2,
       UserName: "Testing user 2",
+    },
+  ];
+  return jsonResponse;
+}
+
+export async function searchCategories(name: string): Promise<Category[]> {
+  const jsonResponse = [
+    {
+      id: 2,
+      name: "Testing category",
     },
   ];
   return jsonResponse;

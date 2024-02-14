@@ -1,3 +1,4 @@
+import { BalanceChange } from "./balanceChange";
 import { User } from "./user";
 
 export type Budget = {
@@ -5,6 +6,6 @@ export type Budget = {
   Balance: number;
   Admin: User;
   Members: User[];
-  BalanceChanges: any;
+  balanceChanges: BalanceChange[];
   Name: string;
 };
